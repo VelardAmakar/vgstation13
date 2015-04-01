@@ -22,13 +22,23 @@
 		var/organ = ((user.hand ? "l_":"r_") + "arm")
 		var/datum/organ/external/affecting = user.get_organ(organ)
 		if(affecting.take_damage(rand(force/2, force))) //random amount of damage between half of the blade's force and the full force of the blade.
+			/*if(isclockcult(user)) NOT IMPLEMENTED YET -velardamakar
+				user << "<span class='sinister'>\"You would think a god of machines would instill some degree of wit in his subjects.\"</span>"
+				var/organ = ((user.arm ? "l_":"r_") + "arm")
+				var/datum/organ/external/affecting = user.get_organ(organ)
+				user.pain(affecting, 100, force, 1)*/
 			user.UpdateDamageIcon()
 	return
 
 /obj/item/weapon/melee/cultblade/pickup(mob/living/user as mob)
 	if(!iscultist(user))
-		user << "<span class='warning'>An overwhelming feeling of dread comes over you as you pick up the cultist's sword. It would be wise to be rid of this blade quickly.</span>"
+		user << "<span class='danger'>An overwhelming feeling of dread comes over you as you pick up the cultist's sword. It would be wise to be rid of this blade quickly.</span>"
 		user.Dizzy(120)
+		/*if(isclockcult(user)) NOT IMPLEMENTED YET -velardamakar
+			user << "<span class='sinister'>\"One of Ratvar's toys is trying to play with my things. Cute.\"</span>"
+			var/organ = ((user.hand ? "l_":"r_") + "hand")
+			var/datum/organ/external/affecting = user.get_organ(organ)
+			user.pain(affecting, 10, 1, 1)*/
 
 
 /obj/item/clothing/head/culthood

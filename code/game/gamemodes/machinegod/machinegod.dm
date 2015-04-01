@@ -1,4 +1,6 @@
 
+/*/proc/isclockcult(mob/living/M as mob)  NOT IMPLEMENTED YET -velardamakar
+	return istype(M) && M.mind && ticker && ticker.mode && (M.mind in ticker.mode.machinegod)*/
 
 /datum/game_mode/machinegod
 	name = "machinegod"
