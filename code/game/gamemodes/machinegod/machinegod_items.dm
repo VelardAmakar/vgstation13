@@ -1,3 +1,71 @@
+/obj/item/clock_component
+	name = "Clockwork Component"
+	desc = "lol this item shouldn't exist"
+	icon = 'icons/obj/clockwork/components.dmi'
+	throwforce = 0
+	w_class = 1.0
+	throw_speed = 7
+	throw_range = 15
+	var/list/godtext = list("This item really shouldn't exist, y'know.")
+	var/godbanter = "Your shit sucks and this item shouldn't exist."
+
+/obj/item/clock_component/examine(mob/user)
+	..()
+	//add a check to see if the revenant in question isn't summoned, if false, no response
+	if(prob(15)) //&& iscultist(user) == CULT_CLOCK
+		user << "<span class='sinister'>[pick(godtext)]</span>"
+	if(iscultist(user) || user.mind.assigned_role == "Chaplain")
+		if(prob(45))
+			user << "<span class='danger'>[godbanter]</span>"
+
+/obj/item/clock_component/belligerent
+	name = "belligerent eye"
+	desc = "<span class='danger'>It's as if it's looking for something to hurt.</span>"
+	icon_state = "eye"
+	godtext = list("\"...\"", \
+	"For a brief moment, your mind is flooded with with extremely violent thoughts.")
+	godbanter = "The eye gives you an intensely hateful glare."
+
+/obj/item/clock_component/vanguard
+	name = "vanguard cogwheel"
+	desc = "<span class='info'>It's as if it's trying to comfort you with its glow.</span>"
+	icon_state = "cogwheel"
+	godtext = list("\"Be safe, child.\"", \
+	"You feel comforted, inexplicably.", \
+	"\"Never hesitate to make sacrifices for your brothers and sisters.\"", \
+	"\"Never forget; pain is temporary, His glory is eternal.\"")
+	godbanter = "\"Pray to your god that we never meet.\""
+
+/obj/item/clock_component/replicant
+	name = "replicant alloy"
+	desc = "<b>It's as if it's calling to be moulded into something greater.</b>"
+	icon_state = "alloy"
+	godtext = list("\"There's always something to be done. Get to it.\"", \
+	"\"Spend more time making these and less time gazing into them.\"", \
+	"\"Idle hands are worse than broken hands. Get to work.\"", \
+	"A detailed image of Ratvar appears in the alloy for a split second.")
+	godbanter = "The alloy takes an ugly, grotesque shape for a moment."
+
+/obj/item/clock_component/hierophant
+	name = "hierophant ansible"
+	desc = "<span style='color:#ffc000'><b>It's as if it's trying to say something...</b></span>"
+	icon_state = "ansible"
+	godtext = list("\"NYEHEHEHEHEH!\"", \
+	"\"Rkvyr vf fhpu n'ober. Gurer'f abguvat v'pna uhag va urer.\"", \
+	"\"Jung'f xrrcvat lbh? V'jnag gb tb xvyy fbzrguvat.\"", \
+	"\"V'zvff gur fzryy bs oheavat syrfu fb onqyl...\"")
+	godbanter = "\"Fbba, jr funyy erghea, naq lbh funyy crevfu. Hahahaha...\""
+
+/obj/item/clock_component/geis
+	name = "geis capacitor"
+	desc = "<span style='color:magenta'><i>It's as if it really doesn't doesn't appreciate being held.</i></span>"
+	icon_state = "capacitor"
+	godtext = list("\"Disgusting.\"", \
+	"\"Well, aren't you an inquisitive fellow?\"", \
+	"A foul presence pervades your mind, and suddenly vanishes.", \
+	"\"The fact that Ratvar has to depend on simpletons like you is appalling.\"")
+	godbanter = "\"You know what they say; curiosity lobotomized the cat.\""
+
 /obj/item/clothing/glasses/wraithspecs
 	name = "antique spectacles"
 	desc = "Bizarre spectacles with yellow lenses. They radiate a discomforting energy."
@@ -177,3 +245,128 @@
 			if(creator)
 				creator << "<span class='sinister'>[judgetotal] target\s judged.</span>"
 			returnToPool(src)
+
+/obj/item/weapon/spear/clockspear
+	icon_state = "spearclock0"
+	name = "ancient spear"
+	desc = "A deadly, bronze weapon of ancient design."
+	force = 5
+	w_class = 4.0
+	slot_flags = SLOT_BACK
+	throwforce = 5
+	flags = TWOHANDABLE
+	hitsound = 'sound/weapons/bladeslice.ogg'
+	attack_verb = list("stabbed", "poked", "jabbed", "torn", "gored")
+	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/swords_axes.dmi', "right_hand" = 'icons/mob/in-hand/right/swords_axes.dmi')
+	var/summontime = 85 //when that ends, no spear
+
+/obj/item/weapon/spear/clockspear/New()
+	..()
+	processing_objects += src
+
+/obj/item/weapon/spear/clockspear/process()
+	if(summontime <= 0)
+		var/mob/living/M = loc
+		if(istype(M))
+			M.visible_message("<span class='warning'>The spear vanishes from [M]'s hand.</span>", \
+			"<span class='sinister'>The spear vanishes from your hand.</span>")
+		qdel(src)
+	else
+		summontime--
+
+/obj/item/weapon/spear/clockspear/update_wield(mob/user)
+	icon_state = "spearclock[wielded ? 1 : 0]"
+	item_state = "spearclock[wielded ? 1 : 0]"
+	force = wielded ? 12 : 5
+	if(user)
+		user.update_inv_l_hand()
+		user.update_inv_r_hand()
+	return
+
+/obj/item/weapon/spear/clockspear/attack(target as mob, mob/living/user as mob)
+	//if(isclockcult(user)) NOT IMPLEMENTED YET -velardamakar
+	..()
+	var/mob/living/M = target
+	if(!istype(M)) return
+	if(iscultist(target))
+		M.take_organ_damage(wielded ? 38 : 25)
+	if(issilicon(target))
+		M.take_organ_damage(wielded ? 28 : 15)
+	/*else
+		user.Paralyse(5)
+		user << "<span class='warning'>An unexplicable force powerfully repels the spear from [target]!</span>"
+		var/organ = ((user.hand ? "l_":"r_") + "arm")
+		var/datum/organ/external/affecting = user:get_organ(organ)
+		if(affecting.take_damage(rand(force/2, force))) //random amount of damage between half of the spear's force and the full force of the spear.
+			if(iscultist(user))
+				user << "<span class='sinister'>\"You're liable to put your eye out like that.\"</span>"
+				var/organ = ((user.arm ? "l_":"r_") + "arm")
+				var/datum/organ/external/affecting = user:get_organ(organ)
+				user:pain(affecting, 100, force, 1)
+			user.UpdateDamageIcon()*/
+
+/obj/item/weapon/spear/clockspear/pickup(mob/living/user as mob)
+	/*if(!isclockcult(user)) NOT IMPLEMENTED YET -velardamakar
+		user << "<span class='danger'>An overwhelming feeling of dread comes over you as you pick up the cultist's spear. It would be wise to be rid of this weapon quickly.</span>"
+		user.Dizzy(120)*/
+	if(iscultist(user))
+		user << "<span class='sinister'>\"Does a savage like you even know how to use that thing?\"</span>"
+		var/organ = ((user.hand ? "l_":"r_") + "hand")
+		var/datum/organ/external/affecting = user:get_organ(organ)
+		user:pain(affecting, 10, 1, 1)
+
+/obj/item/weapon/spear/clockspear/throw_impact(atom/A, mob/user)
+	..()
+	var/turf/T = get_turf(A)
+	T.turf_animation('icons/obj/clockwork/structures.dmi',"energyoverlay[pick(1,2)]",0,0,MOB_LAYER+1,'sound/weapons/bladeslice.ogg')
+	var/mob/living/M = A
+	if(!istype(M)) return
+	if(iscultist(M))
+		M.take_organ_damage(15)
+		M.Stun(1)
+	if(issilicon(M))
+		M.take_organ_damage(8)
+		M.Stun(2)
+	qdel(src)
+
+/spell/clockspear
+	name = "Conjure Spear"
+	desc = "Conjure a brass spear that serves as a viable weapon against heathens and silicons. Lasts for 3 minutes."
+
+	spell_flags = 0
+	range = 0
+	charge_max = 2000
+	invocation = "Rar'zl orjner!"
+	invocation_type = SpI_SHOUT
+	still_recharging_msg = "<span class='sinister'>\"Patience is a virtue.\"</span>"
+
+	override_base = "clock"
+	cast_sound = 'sound/effects/teleport.ogg'
+	hud_state = "clock_spear"
+
+/spell/clockspear/choose_targets(mob/user = usr)
+	return list(user)
+
+/spell/clockspear/cast(null, mob/user = usr)
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		if(H.put_in_any_hand_if_possible(new/obj/item/weapon/spear/clockspear))
+			user << "<span class='danger'>You conjure a dangerous-looking brass spear.</span>"
+		else
+			user << "<span class='sinister'>\"I honestly don't know what you were expecting.\"</span>"
+	playsound(user,'sound/effects/evolve.ogg',100,1)
+	for(var/turf/T in get_area(user))
+		for(var/obj/machinery/light/L in T.contents)
+			if(L && prob(20)) L.flicker()
+
+
+//DEBUG ITEM
+/obj/item/weapon/clockcheat
+	name = "ZOOP"
+	desc = "ZOP"
+	icon = 'icons/obj/assemblies.dmi'
+	icon_state = "posibrain-occupied"
+
+/obj/item/weapon/clockcheat/pickup(mob/living/user as mob)
+	user << "<span class='sinister'>Ratvar: \"It's lit.\"</span>"
+	user.add_spell(new/spell/clockspear)
