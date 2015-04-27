@@ -6,7 +6,11 @@
 
 
 /proc/iscultist(mob/living/M as mob)
-	return istype(M) && M.mind && ticker && ticker.mode && (M.mind in ticker.mode.cult)
+	if(!M) return 0
+	if(!ticker) return 0
+	if(M.mind in ticker.mode.cult) return 1
+	if(M.mind in ticker.mode.clockcult) return 2
+	else return 0
 
 /proc/is_convertable_to_cult(datum/mind/mind)
 	if(!istype(mind))	return 0

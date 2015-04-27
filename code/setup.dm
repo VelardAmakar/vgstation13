@@ -759,14 +759,15 @@ var/list/TAGGERLOCATIONS = list(
 
 // Should correspond to jobbans, too.
 #define ROLE_ALIEN      "alien"
-#define ROLE_BLOB       "blob"      // New!
-#define ROLE_BORER      "borer"     // New!
+#define ROLE_BLOB       "blob"       // New!
+#define ROLE_BORER      "borer"      // New!
 #define ROLE_CHANGELING "changeling"
-#define ROLE_COMMANDO   "commando"  // New!
+#define ROLE_COMMANDO   "commando"   // New!
 #define ROLE_CULTIST    "cultist"
+#define ROLE_CLOCKCULT  "machinegod" // New!
 #define ROLE_MALF       "malf AI"
 #define ROLE_NINJA      "ninja"
-#define ROLE_OPERATIVE  "operative" // New!
+#define ROLE_OPERATIVE  "operative"  // New!
 #define ROLE_PAI        "pAI"
 #define ROLE_PLANT      "Dionaea"
 #define ROLE_POSIBRAIN  "posibrain"
@@ -887,6 +888,10 @@ var/list/RESTRICTED_CAMERA_NETWORKS = list( //Those networks can only be accesse
 #define VAMP_SHADOW   14
 #define VAMP_CHARISMA 15
 #define VAMP_UNDYING  16
+
+// Cult affiliation defines
+#define CULT_BLOOD 1 // Nar'sie
+#define CULT_CLOCK 2 // Ratvar
 
 // Moved from machine_interactions.dm
 #define STATION_Z  1
