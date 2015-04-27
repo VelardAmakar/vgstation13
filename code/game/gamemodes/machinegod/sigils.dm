@@ -16,20 +16,23 @@
 	var/nullblock = 0
 	var/culttrigger = 0 //Can Ratvar cultists trigger this?
 
+
 /obj/effect/sigil/Crossed(AM as mob|obj)
 	Bumped(AM)
+
 
 /obj/effect/sigil/Bumped(mob/M as mob|obj)
 	if(iscarbon(M) || issilicon(M))
 		activation(M)
-		/*if(isclockcult(M)) NOT IMPLEMENTED YET -velardamakar
-			if(culttrigger)
-				activation(M)
+		if(culttrigger && isclockcult(M))
+			activation(M)
 		else
-			activation(M)*/
+			activation(M)
+
 
 /obj/effect/sigil/cultify() //PURGE
 	qdel(src)
+
 
 /obj/effect/sigil/proc/activation(var/mob/M as mob) //What does it do when it's triggered?
 	if(M.stat==DEAD)
@@ -49,16 +52,6 @@
 	spawn(10)
 		color = initial(color)
 
-/obj/effect/sigil/proc/findNullRod(var/atom/target)
-	if(istype(target,/obj/item/weapon/nullrod))
-		var/turf/T = get_turf(target)
-		nullblock = 1
-		T.turf_animation('icons/effects/96x96.dmi',"nullding",-32,-32,MOB_LAYER+1,'sound/piano/Ab7.ogg')
-		return 1
-	else if(target.contents)
-		for(var/atom/A in target.contents)
-			findNullRod(A)
-	return 0
 
 /obj/effect/sigil/transgression
 	name = "dull sigil"
@@ -66,6 +59,7 @@
 	icon_state = "transgression"
 	alpha = 160
 	actcolor = "#FF0000"
+
 
 /obj/effect/sigil/transgression/activation(var/mob/M as mob)
 	..()
@@ -77,12 +71,14 @@
 		M.Stun(4)
 		M << "<span class='warning'>An unseen force renders you motionless!</span>"
 
+
 /obj/effect/sigil/transmission
 	name = "faint sigil"
 	desc =  "A faint golden sigil. It's rather hard to notice these!"
 	icon_state = "transmission"
 	alpha = 50
 	actcolor = "#FFFF00"
+
 
 /obj/effect/sigil/transmission/activation(var/mob/M as mob)
 	..()
@@ -97,6 +93,7 @@
 		else
 			M << "<span class='warning'>The sigil lights up, but nothing happens...</span>"
 
+
 /obj/effect/sigil/submission
 	name = "ominous sigil"
 	desc =  "An ominous golden sigil. Something about it really bothers you."
@@ -104,13 +101,14 @@
 	alpha = 50
 	actcolor = "#FF00FF"
 
+
 /obj/effect/sigil/submission/activation(var/mob/M as mob)
 	..()
 	if(!M.mind)
 		return
 
-	/*if(isclockcult(M)) NOT IMPLEMENTED YET -velardamakar
-		M << "<span class='sinister'>\"You're already a follower! I hope you know what you're doing.\"</span>"*/
+	if(isclockcult(M))
+		M << "<span class='sinister'>\"You're already a follower! I hope you know what you're doing.\"</span>"
 
 	/*if(istype(mode_ticker) && (M.mind == mode_ticker.harvest_target)) NOT IMPLEMENTED YET -velardamakar
 		M.visible_message("<span class='warning'>The sigil glows, but it's as if [M] is being rejected.</span>", \

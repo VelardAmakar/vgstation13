@@ -2,12 +2,10 @@
 /datum/game_mode
 	var/list/datum/mind/clockcult = list()
 
-/*/proc/iscultist(mob/living/M as mob)
-	if(!M) return 0
-	if(!ticker) return 0
-	if(M.mind in ticker.mode.cult) return 1
-	if(M.mind in ticker.mode.clockcult) return 2
-	else return 0*///Found in cult.dm, displayed here for reference
+
+/proc/isclockcult(mob/living/M)
+	return istype(M) && M.mind && ticker && ticker.mode && (M.mind in ticker.mode.clockcult)
+
 
 /datum/game_mode/machinegod
 	name = "machinegod"
@@ -38,9 +36,11 @@
 
 	var/const/conversion_percent = 45
 
+
 /datum/game_mode/machinegod/announce()
 	world << "<B>The current game mode is - Machinegod!</B>"
 	world << "<B>Some crewmembers are attempting to start a cult!<BR>\nCultists - complete your objectives. Convert crewmembers to your cause by using Geis or a submission sigil. Remember - there is no you, there is only the cult.<BR>\nPersonnel - Do not let the cult succeed in its mission. Brainwashing them with the chaplain's bible reverts them to whatever CentCom-allowed faith they had.</B>"
+
 
 /datum/game_mode/machinegod/pre_setup()
 	if(istype(ticker.mode, /datum/game_mode/mixed))
@@ -63,3 +63,29 @@
 		clockcult += cultist
 
 	return (clockcult.len > 0)
+
+
+/datum/game_mode/proc/add_clockcultist(var/datum/mind/clock_mind, var/forced = 0)
+	if(!istype(clock_mind))
+		return 0
+	if(!(clock_mind in clockcult) && is_convertable_to_cult(clock_mind, forced))
+		clockcult |= clock_mind
+		update_antag_icons_added(clock_mind, clockcult, "clockcult")
+
+
+/datum/game_mode/proc/remove_clockcultist(var/datum/mind/clock_mind, var/show_message = 1, var/log = 1)
+	if(clock_mind in clockcult)
+		update_antag_icons_removed(clock_mind, clockcult, "clockcult")
+		clockcult -= clock_mind
+		clock_mind.current << "<span class='danger'><FONT size = 3>Thoughts of the Justiciar and his eternal prison fade from your mind. The sounds of celestial clockwork fall silent, and become nothing more than fleeting memories.</FONT></span>"
+		clock_mind.memory = ""
+
+		if(show_message)
+			clock_mind.current.visible_message("<FONT size = 3>[clock_mind.current] looks like they just reverted to their old faith!</FONT>")
+
+		if(log)
+			log_admin("[clock_mind.current] ([ckey(clock_mind.current.key)] has been deconverted from the clock cult")
+
+
+
+

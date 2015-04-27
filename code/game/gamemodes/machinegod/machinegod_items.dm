@@ -12,7 +12,7 @@
 /obj/item/clock_component/examine(mob/user)
 	..()
 	//add a check to see if the revenant in question isn't summoned, if false, no response
-	if(prob(15)) //&& iscultist(user) == CULT_CLOCK
+	if(prob(15) && isclockcult(user))
 		user << "<span class='sinister'>[pick(godtext)]</span>"
 	if(iscultist(user) || user.mind.assigned_role == "Chaplain")
 		if(prob(45))
@@ -89,7 +89,7 @@
 		if(prob(15))
 			wearer << "<span class='danger'>Your eyes burn as you look through the spectacles.</span>"
 
-/obj/item/clothing/glasses/wraithspecs/equipped(M as mob, glasses)
+/obj/item/clothing/glasses/wraithspecs/equipped(var/mob/M, glasses)
 	var/mob/living/carbon/human/H = M
 	if(!H) return
 	if(H.glasses == src)
@@ -158,7 +158,7 @@
 				H.client.mouse_pointer_icon = file("icons/effects/visor_reticule.dmi")
 		H.update_inv_glasses()
 
-/obj/item/clothing/glasses/judicialvisor/ranged_weapon(var/atom/A, mob/living/carbon/human/wearer as mob)
+/obj/item/clothing/glasses/judicialvisor/ranged_weapon(var/atom/A, mob/living/carbon/human/wearer)
 	if(cooldown)
 		wearer << "<span class='sinister'>\"Have patience. It's not ready yet.\"</span>"
 		return
@@ -174,9 +174,9 @@
 		wearer.pain(affecting, 50, 1, 1)
 		return
 
-	/*if(!isclockcult(wearer)) NOT IMPLEMENTED YET -velardamakar
-		wearer << "Nothing happens."
-		return*/
+	if(!isclockcult(wearer))
+		wearer << "<span class='warning'>You can't quite figure out how to use this...</span>"
+		return
 
 	if(!cooldown)
 		var/turf/target = get_turf(A)
@@ -210,7 +210,8 @@
 			returnToPool(src)
 	flick("judgemarker", src)
 	for(var/mob/living/L in range(1,src))
-		//if(isclockcult(L)) continue  NOT IMPLEMENTED YET -velardamakar
+		if(isclockcult(L))
+			continue
 		L << "<span class='danger'>A strange force weighs down on you!</span>"
 		L.adjustBruteLoss(blast_damage + (iscultist(L)*10))
 		if(iscultist(L))
@@ -232,8 +233,8 @@
 					returnToPool(src)
 
 			for(var/mob/living/L in range(1,src))
-				/*if(isclockcult(L))  NOT IMPLEMENTED YET -velardamakar
-					add_logs(creator, L, "used a judgement blast on their ally, ", object="judicial visor")*/
+				if(isclockcult(L))
+					add_logs(creator, L, "used a judgement blast on their ally, ", object="judicial visor")
 				L << "<span class='danger'>You are struck by a mighty force!</span>"
 				L.adjustBruteLoss(blast_damage + (iscultist(L)*5))
 				if(iscultist(L))
@@ -283,11 +284,13 @@
 		user.update_inv_r_hand()
 	return
 
-/obj/item/weapon/spear/clockspear/attack(target as mob, mob/living/user as mob)
-	//if(isclockcult(user)) NOT IMPLEMENTED YET -velardamakar
+/obj/item/weapon/spear/clockspear/attack(var/mob/target, mob/living/user )
+	if(!isclockcult(user))
+		return
 	..()
 	var/mob/living/M = target
-	if(!istype(M)) return
+	if(!istype(M))
+		return
 	if(iscultist(target))
 		M.take_organ_damage(wielded ? 38 : 25)
 	if(issilicon(target))
@@ -305,11 +308,11 @@
 				user:pain(affecting, 100, force, 1)
 			user.UpdateDamageIcon()*/
 
-/obj/item/weapon/spear/clockspear/pickup(mob/living/user as mob)
-	/*if(!isclockcult(user)) NOT IMPLEMENTED YET -velardamakar
+/obj/item/weapon/spear/clockspear/pickup(mob/living/user)
+	if(!isclockcult(user))
 		user << "<span class='danger'>An overwhelming feeling of dread comes over you as you pick up the cultist's spear. It would be wise to be rid of this weapon quickly.</span>"
-		user.Dizzy(120)*/
-	if(iscultist(user))
+		user.Dizzy(120)
+	else if(iscultist(user))
 		user << "<span class='sinister'>\"Does a savage like you even know how to use that thing?\"</span>"
 		var/organ = ((user.hand ? "l_":"r_") + "hand")
 		var/datum/organ/external/affecting = user:get_organ(organ)

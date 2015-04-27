@@ -657,7 +657,7 @@ datum/mind
 				if("clear")
 					if(src in ticker.mode.cult)
 						ticker.mode.cult -= src
-						ticker.mode.update_cult_icons_removed(src)
+						ticker.mode.update_antag_icons_removed(src, ticker.mode.cult, "cult")
 						special_role = null
 						var/datum/game_mode/cult/cult = ticker.mode
 						if (istype(cult))
@@ -668,7 +668,7 @@ datum/mind
 				if("cultist")
 					if(!(src in ticker.mode.cult))
 						ticker.mode.cult += src
-						ticker.mode.update_cult_icons_added(src)
+						ticker.mode.update_antag_icons_added(src, ticker.mode.cult, "cult")
 						special_role = "Cultist"
 						current << "<span class='sinister'>You catch a glimpse of the Realm of Nar-Sie, The Geometer of Blood. You now see how flimsy the world is, you see that it should be open to the knowledge of Nar-Sie.</span>"
 						current << "<span class='sinister'>Assist your new compatriots in their dark dealings. Their goal is yours, and yours is theirs. You serve the Dark One above all else. Bring It back.</span>"
@@ -706,7 +706,7 @@ datum/mind
 						special_role = null
 						current.spellremove(current, config.feature_object_spell_system? "object":"verb")
 						current << "<span class='danger'><FONT size = 3>You have been brainwashed! You are no longer a wizard!</FONT></span>"
-						ticker.mode.update_wizard_icons_removed(src)
+						ticker.mode.update_antag_icons_removed(src, ticker.mode.wizards, "wizard")
 						log_admin("[key_name_admin(usr)] has de-wizard'ed [current].")
 				if("wizard")
 					if(!(src in ticker.mode.wizards))
@@ -714,7 +714,7 @@ datum/mind
 						special_role = "Wizard"
 						//ticker.mode.learn_basic_spells(current)
 						current << "<span class='danger'>You are the Space Wizard!</span>"
-						ticker.mode.update_wizard_icons_added(src)
+						ticker.mode.update_antag_icons_added(src, ticker.mode.wizards, "wizard")
 						log_admin("[key_name_admin(usr)] has wizard'ed [current].")
 				if("lair")
 					current.loc = pick(wizardstart)
@@ -725,7 +725,7 @@ datum/mind
 				if("autoobjectives")
 					ticker.mode.forge_wizard_objectives(src)
 					usr << "<span class='notice'>The objectives for wizard [key] have been generated. You can edit them and anounce manually.</span>"
-			ticker.mode.update_all_wizard_icons()
+			ticker.mode.update_all_antag_icons(ticker.mode.wizards, "wizard")
 
 		else if (href_list["changeling"])
 			switch(href_list["changeling"])
@@ -792,7 +792,7 @@ datum/mind
 				if("clear")
 					if(src in ticker.mode.syndicates)
 						ticker.mode.syndicates -= src
-						ticker.mode.update_synd_icons_removed(src)
+						ticker.mode.update_antag_icons_removed(src, ticker.mode.syndicates, "synd")
 						special_role = null
 						for (var/datum/objective/nuclear/O in objectives)
 							objectives-=O
@@ -801,7 +801,7 @@ datum/mind
 				if("nuclear")
 					if(!(src in ticker.mode.syndicates))
 						ticker.mode.syndicates += src
-						ticker.mode.update_synd_icons_added(src)
+						ticker.mode.update_antag_icons_added(src, ticker.mode.syndicates, "synd")
 						if (ticker.mode.syndicates.len==1)
 							ticker.mode.prepare_syndicate_leader(src)
 						else
@@ -1096,7 +1096,7 @@ datum/mind
 	proc/make_Nuke()
 		if(!(src in ticker.mode.syndicates))
 			ticker.mode.syndicates += src
-			ticker.mode.update_synd_icons_added(src)
+			ticker.mode.update_antag_icons_added(src, ticker.mode.syndicates, "synd")
 			if (ticker.mode.syndicates.len==1)
 				ticker.mode.prepare_syndicate_leader(src)
 			else
@@ -1136,7 +1136,7 @@ datum/mind
 			special_role = "Wizard"
 			assigned_role = "MODE"
 			//ticker.mode.learn_basic_spells(current)
-			ticker.mode.update_wizard_icons_added(src)
+			ticker.mode.update_antag_icons_added(src, ticker.mode.wizards, "wizard")
 			if(!wizardstart.len)
 				current.loc = pick(latejoin)
 				current << "HOT INSERTION, GO GO GO"
@@ -1149,13 +1149,13 @@ datum/mind
 			ticker.mode.name_wizard(current)
 			ticker.mode.forge_wizard_objectives(src)
 			ticker.mode.greet_wizard(src)
-			ticker.mode.update_all_wizard_icons()
+			ticker.mode.update_all_antag_icons(ticker.mode.wizards, "wizard")
 
 
 	proc/make_Cultist()
 		if(!(src in ticker.mode.cult))
 			ticker.mode.cult += src
-			ticker.mode.update_cult_icons_added(src)
+			ticker.mode.update_antag_icons_added(src, ticker.mode.cult, "cult")
 			special_role = "Cultist"
 			current << "<span class='sinister'>You catch a glimpse of the Realm of Nar-Sie, The Geometer of Blood. You now see how flimsy the world is, you see that it should be open to the knowledge of Nar-Sie.</span>"
 			current << "<span class='sinister'>Assist your new compatriots in their dark dealings. Their goal is yours, and yours is theirs. You serve the Dark One above all else. Bring It back.</span>"
