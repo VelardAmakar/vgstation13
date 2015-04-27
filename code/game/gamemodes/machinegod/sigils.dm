@@ -106,14 +106,16 @@
 	..()
 	if(!M.mind)
 		return
+
 	/*if(isclockcult(M)) NOT IMPLEMENTED YET -velardamakar
 		M << "<span class='sinister'>\"You're already a follower! I hope you know what you're doing.\"</span>"*/
-	if(istype(mode_ticker) && (M.mind == mode_ticker.sacrifice_target))
+
+	/*if(istype(mode_ticker) && (M.mind == mode_ticker.harvest_target)) NOT IMPLEMENTED YET -velardamakar
 		M.visible_message("<span class='warning'>The sigil glows, but it's as if [M] is being rejected.</span>", \
 		"<span class='sinister'>\"No.\"</span>", \
 		"<span class='warning'>Something feels wrong.</span>")
-		return
-	nullblock = 0
+		return*/
+
 	M.visible_message("<span class='warning'>As the sigil glows, a golden light fills [M]'s eyes.</span>", \
 	"<span class='sinister'>\"You belong to me now.\"</span>", \
 	"<span class='warning'>Something feels wrong.</span>")
