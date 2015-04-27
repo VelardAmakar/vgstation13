@@ -20,7 +20,7 @@
 	Bumped(AM)
 
 /obj/effect/sigil/Bumped(mob/M as mob|obj)
-	if(istype(M, /mob/living/carbon/human) || istype(M, /mob/living/carbon/monkey) || istype(M, /mob/living/silicon))
+	if(iscarbon(M) || issilicon(M))
 		activation(M)
 		/*if(isclockcult(M)) NOT IMPLEMENTED YET -velardamakar
 			if(culttrigger)
@@ -34,9 +34,11 @@
 /obj/effect/sigil/proc/activation(var/mob/M as mob) //What does it do when it's triggered?
 	if(M.stat==DEAD)
 		return
-	nullblock = 0
+	var/nullblock = 0
 	for(var/turf/TR in range(src,1))
-		findNullRod(TR)
+		if(findNullRod(TR))
+			nullblock = 1
+			break
 	if(nullblock)
 		M << "<span class='warning'>The null rod negates the sigil's power.</span>"
 		return
